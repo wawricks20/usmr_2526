@@ -16,7 +16,7 @@ followup
 
 ### 1. Pilot studies ---
 
-print("Hello")
+
 
 
 
