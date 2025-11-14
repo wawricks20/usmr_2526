@@ -56,8 +56,41 @@ chisq.test(pilotA_table)$expected
 chisq.test(pilotA_table)
   
   ### Question B - Pilot study B
+    ### Data Cleaning (Standardising names)
+pilotB <- pilotB |>
+  mutate(
+    discount = replace(discount, 1:20, "50p keep cup discount"),
+    discount = replace(discount, 21:40, "no discount")
+  )
+    ### Descriptive statistics
+pilotB_descriptives <- pilotB|>
+  group_by(discount) |>
+  summarise(
+    coffees_avg = mean(ncoffees),
+    coffees_sd = sd(ncoffees)
+  )
+    ### Descriptive plot
+pilotB_graph <- ggplot(pilotB) +
+  aes(x = discount, y = ncoffees, fill = discount) +
+  geom_boxplot(
+    width = 0.5
+  ) +
+  labs(
+    title = "Coffee sales: Discount vs No-Discount",
+    y = "Coffees Sold",
+    x = "Discount"
+  ) +
+  theme_classic() +
+  scale_fill_manual(values = c("skyblue", "coral")) +
+  theme(legend.position = "none")
 
-
+pilotB_graph
+    ### Normality assumption checks (Normal distribution, p > .05)
+shapiro.test(pilotB$ncoffees[pilotB$discount == "50p keep cup discount"])
+shapiro.test(pilotB$ncoffees[pilotB$discount == "no discount"])
+    ### Analysis (Not Significant, p> .05)
+t.test(ncoffees ~ discount, data = pilotB, alternative = "greater")
+  ### Question C - Pilot study C
 
 ### 2. Nudge nudge, wink wink ---
 
