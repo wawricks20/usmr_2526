@@ -5,6 +5,7 @@ source("https://edin.ac/42QTz8T")
 get_my_data(group_name = "sampling_seahorses")
 #libraries(INSERT ALL LIBRARIES HERE)
 library(tidyverse)
+library(psych)
 # after running the above line of code will, the various datasets should be in your environment
 pilotA
 pilotB
@@ -91,9 +92,37 @@ shapiro.test(pilotB$ncoffees[pilotB$discount == "no discount"])
     ### Analysis (Not Significant, p> .05)
 t.test(ncoffees ~ discount, data = pilotB, alternative = "greater")
   ### Question C - Pilot study C
+    ### Removing N/A entries, changing device usage to hours
+pilotC <- pilotC|>
+  filter(!is.na(device_usage)) |>
+  mutate(device_usage = device_usage/60)
+  
+    ### Descriptive statistics
+dim(pilotC) 
 
+pilotCdescriptives <- pilotC |>
+  select(device_usage, env_concern) |>
+  describe() 
+
+pilotCdescriptives
+    ### Normality assumption checks
+qqnorm(pilotC$device_usage, main="Q-Q Plot: Device Usage")
+qqline(pilotC$device_usage, col="red") 
+
+qqnorm(pilotC$env_concern, main="Q-Q Plot: Environmental Concern")
+qqline(pilotC$env_concern, col="red")
+    ### Analysis
+cor.test(pilotC$device_usage, pilotC$env_concern)
+    ### Graphical representation
+ggplot(pilotC, aes(x= device_usage, y= env_concern)) + 
+  geom_point() +
+  labs(x= "Device Usage (hours per day)",
+       y = "Environmental Concern Score",
+       title = "Pilot Study C",
+       subtitle = "Relationship Between Device Usage and Environmental Concern") +
+  theme_classic() +
+  geom_smooth(method=lm, se= FALSE, color= "brown") 
 ### 2. Nudge nudge, wink wink ---
-
 
 
 
