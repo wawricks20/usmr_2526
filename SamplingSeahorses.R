@@ -27,12 +27,32 @@ get_my_data(group_name = "sampling_seahorses")
 # Load libraries
 
 library(tidyverse) 
-library(dplyr) 
 library(psych) 
 
 # Remove N/A entries 
 
 pilotC <- pilotC |> filter(!is.na(device_usage)) 
+
+# Test for normality - 1
+
+qqnorm(pilotC$device_usage, main="Q-Q Plot: Device Usage")
+qqline(pilotC$device_usage, col="red") 
+
+qqnorm(pilotC$env_concern, main="Q-Q Plot: Device Usage")
+qqline(pilotC$env_concern, col="red") 
+
+# Remove outliers 
+
+pilotC <- pilotC[-c(9,29), ] 
+
+
+# Test for normality - 2
+
+qqnorm(pilotC$device_usage, main="Q-Q Plot: Device Usage")
+qqline(pilotC$device_usage, col="red") 
+
+qqnorm(pilotC$env_concern, main="Q-Q Plot: Device Usage")
+qqline(pilotC$env_concern, col="red") 
 
 # Describe 
 
@@ -43,14 +63,6 @@ descriptives <- pilotC |>
   describe() 
 
 descriptives
-
-# Test for normality 
-
-qqnorm(pilotC$device_usage, main="Q-Q Plot: Device Usage")
-qqline(pilotC$device_usage, col="red") 
-
-qqnorm(pilotC$env_concern, main="Q-Q Plot: Device Usage")
-qqline(pilotC$env_concern, col="red") 
 
 # Testing association 
 
@@ -63,7 +75,7 @@ ggplot(pilotC, aes(x= device_usage, y= env_concern)) +
   labs(x= "Device Usage (minutes per day)",
        y = "Environmental Concern Score",
        title = "Pilot Study C",
-       subtitle = "Relationship Between Device Usage and Environmental Concern"       ) +
+       subtitle = "Relationship Between Device Usage and Environmental Concern") +
   theme_classic() +
   geom_smooth(method=lm, se= FALSE, color= "brown") 
 
