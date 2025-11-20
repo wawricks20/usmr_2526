@@ -129,5 +129,113 @@ ggplot(pilotC, aes(x= device_usage, y= env_concern)) +
 
 ### 3. The uninstalled ---
 
+#combine followup data with nudges data
+followupmerged <- merge(nudges, followup, by="ppt")
+
+#clean up inconsistent binary data
+table(followupmerged$installed)
+followupmerged[followupmerged$installed=="1.0", "installed"] <- "1"
+
+#clean up data by removing participants with unreasonable ages
+table(followupmerged$age)
+followupmerged <- followupmerged |>
+  mutate(age = parse_number(as.character(age))) |>
+  filter(age <= 110)
+
+#clean up data by removing scores that fall outside of Likert score range
+table(followupmerged$env_concern)
+followupmerged <- followupmerged |>
+  filter(env_concern >= 9 & env_concern <= 45)
+
+#remove nudged=0 data from analysis for Part 3
+followupmerged <- followupmerged |>
+  filter(nudged == 1 | nudged == 2)
+
+table(followupmerged$op_sys)
+table(followupmerged$nudged)
+table(followupmerged$EF)
+
+shapiro.test(followupmerged$EF)
+
+#age
+
+shapiro.test(followupmerged$age)
+
+#
+followupmerged |> 
+  group_by(installed) |>
+  summarise(
+    m = mean(age),
+    s = sd(age)
+  )
+
+ggplot(followupmerged, aes(x = age)) +
+  geom_histogram() + 
+  facet_wrap(~installed)
+
+ggplot(followupmerged, aes(x = installed, y = age)) +
+  geom_boxplot()+
+  labs(x="uninstalled",y="age (years)")
+
+t.test(age ~ installed, data = followupmerged)
+
+#Environmental Concern Score
+
+shapiro.test(followupmerged$env_concern)
+
+followupmerged |> 
+  group_by(installed) |>
+  summarise(
+    m = mean(env_concern),
+    s = sd(env_concern)
+  )
+
+ggplot(followupmerged, aes(x = env_concern)) +
+  geom_histogram() + 
+  facet_wrap(~installed)
+
+ggplot(followupmerged, aes(x = installed, y = env_concern)) +
+  geom_boxplot()+
+  labs(x="uninstalled",y="envirnomental concern")
+
+t.test(env_concern ~ installed, data = followupmerged)
+
+#Environmental Footprint Score
+
+shapiro.test(followupmerged$EF)
+
+followupmerged |> 
+  group_by(installed) |>
+  summarise(
+    m = mean(EF),
+    s = sd(EF)
+  )
+
+ggplot(followupmerged, aes(x = EF)) +
+  geom_histogram() + 
+  facet_wrap(~installed)
+
+ggplot(followupmerged, aes(x = installed, y = EF)) +
+  geom_boxplot()+
+  labs(x="uninstalled",y="envirnomental footprint")
+
+t.test(EF ~ installed, data = followupmerged)
+
+
+#operating system
+
+plot(table(followupmerged$installed, followupmerged$op_sys))
+
+chisq.test(table(followupmerged$installed, followupmerged$op_sys))
+
+
+#nudged
+
+plot(table(followupmerged$installed, followupmerged$nudged))
+
+chisq.test(table(followupmerged$installed, followupmerged$nudged))
+
+chisq.test(table(followupmerged$installed, followupmerged$nudged))$observed
+
 
 
