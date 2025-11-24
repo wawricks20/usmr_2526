@@ -152,7 +152,8 @@ nudges <-
                                 labels = c("No nudge", "Opt-in nudge", "Constant nudge")))
 
 #descriptives
-describe(nudges)
+describe(nudges |> select(-nudged))
+table(nudges$nudged)
 
 # Normal Q-Q Plots
 nudges |>
