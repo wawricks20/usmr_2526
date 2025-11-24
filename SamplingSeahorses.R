@@ -151,14 +151,76 @@ nudges <-
                                 levels = c(0, 1, 2),
                                 labels = c("No nudge", "Opt-in nudge", "Constant nudge")))
 
-#descriptive statistics 
-describe(nudges |> select(-nudged))
-table(nudges$nudged)
+#descriptives
+describe(nudges)
 
-#initial visualization
-ggplot(nudges, aes(x = env_concern, y = EF, col = nudged_factor)) +
+# Normal Q-Q Plots
+nudges |>
+  select(nudged, env_concern, EF) |>
+  mutate(nudged = as.numeric(nudged)) |>
+  pivot_longer(everything(), names_to = "variable", values_to = "value") |>
+  mutate(variable = case_when(
+    variable == "nudged" ~ "Nudged",
+    variable == "env_concern" ~ "Environmental Concern",
+    variable == "EF" ~ "Environmental Footprint",
+    TRUE ~ variable
+  )) |>
+  ggplot(aes(sample = value, color = variable, fill = variable)) +
+  stat_qq() +
+  stat_qq_line() +
+  facet_wrap(~ variable, scales = "free") +
+  scale_color_manual(values = c("Nudged" = "salmon1", 
+                                "Environmental Concern" = "lightskyblue2", 
+                                "Environmental Footprint" = "mediumslateblue")) +
+  labs(title = "Normal Q-Q Plots") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+#check for outliers
+ggplot(nudges, aes(x = nudged_factor, y = EF, fill = nudged_factor)) +
+  geom_boxplot(outlier.color = "red", outlier.size = 2) +
+  scale_fill_manual(values = c("No nudge" = "salmon1", 
+                               "Opt-in nudge" = "lightskyblue2", 
+                               "Constant nudge" = "mediumslateblue")) +
+  labs(title = "Environmental Footprint by Nudge Type",
+       x = "Nudge Type",
+       y = "Environmental Footprint") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+#REMOVE outliers purr
+Q1 <- quantile(nudges$EF, 0.25, na.rm = TRUE)
+Q3 <- quantile(nudges$EF, 0.75, na.rm = TRUE)
+IQR <- Q3 - Q1
+
+lower_bound <- Q1 - 1.5 * IQR
+upper_bound <- Q3 + 1.5 * IQR
+
+nudges <- nudges |>
+  filter(EF >= lower_bound & EF <= upper_bound)
+
+#check visually
+ggplot(nudges, aes(x = nudged_factor, y = EF, fill = nudged_factor)) +
+  geom_boxplot(outlier.color = "red", outlier.size = 2) +
+  scale_fill_manual(values = c("No nudge" = "salmon1", 
+                               "Opt-in nudge" = "lightskyblue2", 
+                               "Constant nudge" = "mediumslateblue")) +
+  labs(title = "Environmental Footprint by Nudge Type (After Removing Outliers)",
+       x = "Nudge Type",
+       y = "Environmental Footprint") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+#following visualisation
+ggplot(nudges, aes(x = env_concern, y = EF, col = nudged_factor, fill = nudged_factor)) +
   geom_point() +
-  geom_smooth(method = "lm", se = TRUE, linewidth = 1.2) + scale_color_manual(values = c("No nudge" = "red", "Opt-in nudge" = "yellow", "Constant nudge" = "seagreen")) +
+  geom_smooth(method = "lm", se = TRUE, linewidth = 1.0) + 
+  scale_color_manual(values = c("No nudge" = "salmon1", 
+                                "Opt-in nudge" = "lightskyblue2", 
+                                "Constant nudge" = "mediumslateblue")) +
+  scale_fill_manual(values = c("No nudge" = "salmon1", 
+                               "Opt-in nudge" = "lightskyblue2", 
+                               "Constant nudge" = "mediumslateblue")) +
   labs(
     title = "Environmental Footprint by Concern Level and Nudge Type",
     x = "Environmental Concern Score",
@@ -171,15 +233,12 @@ ggplot(nudges, aes(x = env_concern, y = EF, col = nudged_factor)) +
 model <- lm(EF ~ nudged_factor * env_concern, data = nudges)
 summary(model)
 
+
+
 #plot data
 
-#graph
+
+#plot
+
 
 #refit model
-
-
-
-### 3. The uninstalled ---
-
-
-
