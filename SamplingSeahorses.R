@@ -173,7 +173,7 @@ summary(model)
 
 #plot data
 
-#plot
+#graph
 
 #refit model
 
