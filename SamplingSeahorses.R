@@ -151,8 +151,9 @@ nudges <-
                                 levels = c(0, 1, 2),
                                 labels = c("No nudge", "Opt-in nudge", "Constant nudge")))
 
-#descriptives
-describe(nudges)
+#descriptive statistics 
+describe(nudges |> select(-nudged))
+table(nudges$nudged)
 
 #initial visualization
 ggplot(nudges, aes(x = env_concern, y = EF, col = nudged_factor)) +
