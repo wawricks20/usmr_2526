@@ -98,14 +98,10 @@ pilotC <- pilotC |> filter(!is.na(device_usage))
 # Test for normality - Initial
 qqnorm(pilotC$device_usage, main="Q-Q Plot: Device Usage")
 qqline(pilotC$device_usage, col="salmon2") 
-shapiro.test(pilotC$device_usage)
 pilotCmod <- lm(env_concern ~ device_usage, data = pilotC)
-plot(pilotCmod)
+plot(pilotCmod, which = 2)
 # Remove outliers 
 pilotC <- pilotC[-c(9,29), ] 
-# Test for normality - After removing outliers
-pilotCmod1 <- lm(env_concern ~ device_usage, data = pilotC)
-plot(pilotCmod1)
 # Descriptive Statistics
 dim(pilotC) 
 pilotCdescriptives <- pilotC |>
