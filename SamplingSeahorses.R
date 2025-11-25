@@ -41,7 +41,6 @@ pilotA$condition <- factor(pilotA$condition,
                            labels = c("Nothing", "A Written Message", "Googly Eyes"))
 # Data Visualisation
 pilotA_table <- table(pilotA$condition, pilotA$lights)
-pilotA_table
 pilotA_graph <- ggplot(pilotA) +
   aes(x = condition, fill = lights) +
   geom_bar(position = "dodge") +
