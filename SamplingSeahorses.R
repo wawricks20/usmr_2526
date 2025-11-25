@@ -234,12 +234,17 @@ ggplot(nudges, aes(x = env_concern, y = EF, col = nudged_factor, fill = nudged_f
 model <- lm(EF ~ nudged_factor * env_concern, data = nudges)
 summary(model)
 
-
-
 #plot data
-
+plotdata <- expand_grid(
+  env_concern = 9:45,
+  nudged_factor = c("No nudge", "Opt-in nudge", "Constant nudge")
+)
 
 #plot
-
+broom::augment(model, newdata = plotdata, interval="confidence") |>
+  ggplot(aes(x= env_concern, y = .fitted, 
+             col = nudged_factor, fill = nudged_factor)) + 
+  geom_line() +
+  geom_ribbon(aes(ymin=.lower,ymax=.upper), alpha=.3)
 
 #refit model
