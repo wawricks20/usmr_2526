@@ -358,8 +358,21 @@ arm::binnedplot(fitted(GLM),
                 xlab = 'Prob. of Uninstalling the app', 
                 ylab = 'Studentized Deviance Residuals')
 
+#Get the results of the Generalized Linear Model 
 summary(GLM)
 exp(coef(GLM))
 exp(confint(GLM))
 
+coefs <- coef(GLM)
+se <- summary(GLM)$coefficients[, "Std. Error"]
 
+# Calculate log-odds CI bounds
+lower_log <- coefs - 1.96 * se
+upper_log <- coefs + 1.96 * se
+
+# Exponentiate to get OR CI bounds
+lower_OR <- exp(lower_log)
+upper_OR <- exp(upper_log)
+
+# View results
+cbind(OR = exp(coefs), Lower_CI = lower_OR, Upper_CI = upper_OR)
