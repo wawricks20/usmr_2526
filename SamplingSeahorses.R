@@ -178,7 +178,6 @@ nudges |>
   theme(legend.position = "none")
 
 #shapiro wilkes test
-shapiro.test(nudges$nudged)
 shapiro.test(nudges$env_concern)
 shapiro.test(nudges$EF)
 
