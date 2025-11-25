@@ -245,6 +245,11 @@ broom::augment(model, newdata = plotdata, interval="confidence") |>
   ggplot(aes(x= env_concern, y = .fitted, 
              col = nudged_factor, fill = nudged_factor)) + 
   geom_line() +
-  geom_ribbon(aes(ymin=.lower,ymax=.upper), alpha=.3)
+  geom_ribbon(aes(ymin=.lower,ymax=.upper), alpha=.3) + scale_color_manual(values = c("No nudge" = "salmon1", 
+                                                                                      "Opt-in nudge" = "lightskyblue2", 
+                                                                                      "Constant nudge" = "mediumslateblue")) +
+  scale_fill_manual(values = c("No nudge" = "salmon1", 
+                               "Opt-in nudge" = "lightskyblue2", 
+                               "Constant nudge" = "mediumslateblue"))
 
 #refit model
