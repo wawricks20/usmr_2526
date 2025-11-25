@@ -177,6 +177,11 @@ nudges |>
   theme_minimal() +
   theme(legend.position = "none")
 
+#shapiro wilkes test
+shapiro.test(nudges$age)
+shapiro.test(nudges$env_concern)
+shapiro.test(nudges$EF)
+
 #check for outliers
 ggplot(nudges, aes(x = nudged_factor, y = EF, fill = nudged_factor)) +
   geom_boxplot(outlier.color = "red", outlier.size = 2) +
@@ -200,10 +205,6 @@ upper_bound <- Q3 + 1.5 * IQR
 nudges <- nudges |>
   filter(EF >= lower_bound & EF <= upper_bound)
 
-#shapiro wilkes test
-shapiro.test(nudges$age)
-shapiro.test(nudges$env_concern)
-shapiro.test(nudges$EF)
 
 #check visually
 ggplot(nudges, aes(x = nudged_factor, y = EF, fill = nudged_factor)) +
