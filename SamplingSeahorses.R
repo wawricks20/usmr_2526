@@ -48,7 +48,7 @@ pilotA_graph <- ggplot(pilotA) +
   labs(
     title = "Lights Off vs On"
   ) +
-  theme_classic() +
+  theme_minimal() +
   scale_fill_manual(values = c("salmon2", "darkseagreen2"))
 pilotA_graph
 # Excepted cell assumption
@@ -82,7 +82,7 @@ pilotB_graph <- ggplot(pilotB) +
     y = "Coffees Sold",
     x = "Discount"
   ) +
-  theme_classic() +
+  theme_minimal() +
   scale_fill_manual(values = c("darkseagreen2", "salmon2")) +
   theme(legend.position = "none")
 pilotB_graph
@@ -117,7 +117,7 @@ ggplot(pilotC, aes(x= device_usage, y= env_concern)) +
        y = "Environmental Concern Score",
        title = "Pilot Study C",
        subtitle = "Relationship Between Device Usage and Environmental Concern") +
-  theme_classic() +
+  theme_minimal() +
   geom_smooth(method=lm, se= FALSE, color= "salmon2") 
 ### 2. Nudge nudge, wink wink ---
 
