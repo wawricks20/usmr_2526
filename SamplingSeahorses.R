@@ -188,8 +188,6 @@ ggplot(nudges, aes(x = env_concern, y = EF, col = nudged_factor, fill = nudged_f
 #initial analysis
 model <- lm(EF ~ nudged_factor * env_concern, data = nudges)
 summary(model)
-
-#assumption check
 plot(model)
 
 #plot data
