@@ -119,11 +119,95 @@ ggplot(pilotC, aes(x= device_usage, y= env_concern)) +
   theme_minimal() +
   geom_smooth(method=lm, se= FALSE, color= "salmon2") 
 ### 2. Nudge nudge, wink wink ---
+#identify problems
+summary(nudges)
 
+#remove incorrect age values and convert to numeric
+nudges <- 
+  nudges |>
+  mutate(
+    age = parse_number(as.character(age))) |>
+  filter(age >= 18 & age <= 110)
 
+#remove environmental concern scores under 9 and above 45
+nudges <- 
+  nudges |>
+  mutate(
+    env_concern = as.numeric(as.character(env_concern))) |>
+  filter(env_concern >= 9 & env_concern <= 45)
 
+#from 216 obs to 212
 
-### 3. The uninstalled ---
+#assigning labels
+nudges <- 
+  nudges |>
+  mutate(
+    nudged_factor = factor(nudged, 
+                           levels = c(0, 1, 2),
+                           labels = c("No nudge", "Opt-in nudge", "Constant nudge")))
 
+#descriptives
+describe(nudges |> select(-nudged))
+table(nudges$nudged)
 
+#check visually
+ggplot(nudges, aes(x = nudged_factor, y = EF, fill = nudged_factor)) +
+  geom_boxplot(outlier.color = "red", outlier.size = 2) +
+  scale_fill_manual(values = c("No nudge" = "salmon1", 
+                               "Opt-in nudge" = "lightskyblue2", 
+                               "Constant nudge" = "mediumslateblue")) +
+  labs(title = "Environmental Footprint by Nudge Type",
+       x = "Nudge Type",
+       y = "Environmental Footprint") +
+  theme_minimal() +
+  theme(legend.position = "none")
 
+#following visualisation
+ggplot(nudges, aes(x = env_concern, y = EF, col = nudged_factor, fill = nudged_factor)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = TRUE, linewidth = 1.0) + 
+  scale_color_manual(values = c("No nudge" = "salmon1", 
+                                "Opt-in nudge" = "lightskyblue2", 
+                                "Constant nudge" = "mediumslateblue")) +
+  scale_fill_manual(values = c("No nudge" = "salmon1", 
+                               "Opt-in nudge" = "lightskyblue2", 
+                               "Constant nudge" = "mediumslateblue")) +
+  labs(
+    title = "Environmental Footprint by Concern Level and Nudge Type",
+    x = "Environmental Concern Score",
+    y = "Environmental Footprint",
+  ) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+#initial analysis
+model <- lm(EF ~ nudged_factor * env_concern, data = nudges)
+summary(model)
+plot(model, which = 2)
+plot(model, which = 4)
+
+#plot data
+plotdata <- expand_grid(
+  env_concern = 9:45,
+  nudged_factor = c("No nudge", "Opt-in nudge", "Constant nudge")
+)
+
+#plot
+broom::augment(model, newdata = plotdata, interval="confidence") |>
+  ggplot(aes(x= env_concern, y = .fitted, 
+             col = nudged_factor, fill = nudged_factor)) + 
+  geom_line() +
+  geom_ribbon(aes(ymin=.lower,ymax=.upper), alpha=.3) + scale_color_manual(values = c("No nudge" = "salmon1", 
+                                                                                      "Opt-in nudge" = "lightskyblue2", 
+                                                                                      "Constant nudge" = "mediumslateblue")) +
+  scale_fill_manual(values = c("No nudge" = "salmon1", 
+                               "Opt-in nudge" = "lightskyblue2", 
+                               "Constant nudge" = "mediumslateblue"))
+
+#recenter model to mean of env concern
+nudges_recentered <-
+  nudges |>
+  mutate(
+    env_concern_recenter = env_concern - 26.64)
+model_recentered <- lm(EF ~ nudged_factor * env_concern_recenter, data = nudges_recentered)
+summary(model_recentered)
