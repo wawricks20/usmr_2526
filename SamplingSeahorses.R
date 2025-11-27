@@ -238,6 +238,7 @@ ggplot(nudges, aes(x = env_concern, y = EF, col = nudged_factor, fill = nudged_f
 #initial analysis
 model <- lm(EF ~ nudged_factor * env_concern, data = nudges)
 summary(model)
+plot(model)
 
 #plot data
 plotdata <- expand_grid(
@@ -257,4 +258,10 @@ broom::augment(model, newdata = plotdata, interval="confidence") |>
                                "Opt-in nudge" = "lightskyblue2", 
                                "Constant nudge" = "mediumslateblue"))
 
-#refit model
+#recenter model to the mean of env concern
+nudges_recentered <-
+  nudges |>
+  mutate(
+    env_concern_recenter = env_concern - 26.64)
+model_recentered <- lm(EF ~ nudged_factor * env_concern_recenter, data = nudges_recentered)
+summary(model_recentered)
