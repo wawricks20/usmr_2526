@@ -279,6 +279,9 @@ table(followupmerged$EF)
 followupmerged$installed <- factor(followupmerged$installed,
                                    levels = c(0,1),
                                    labels = c("Uninstalled", "Installed"))
+followupmerged$nudged <- factor(followupmerged$nudged,
+                                   levels = c(1,2),
+                                   labels = c("Opt-In Nudge", "Constant Nudge"))
 
 
 #summary statistics by age and app installed/uninstalled 
@@ -341,7 +344,7 @@ ggplot(followupmerged, aes(x = installed, y = EF)) +
 plot(table(followupmerged$installed, followupmerged$op_sys))
 
 #plot for nudge type and app installed/uninstalled
-plot(table(followupmerged$installed, followupmerged$nudged))
+plot(table(followupmerged$installed, followupmerged$nudged), main = "App Installation by Nudge Type")
 
 #proportions of nudge type installed/uninstalled the app
 chisq.test(table(followupmerged$installed, followupmerged$nudged))$observed
